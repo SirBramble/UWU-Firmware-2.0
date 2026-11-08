@@ -1,0 +1,3 @@
+[submodule "lib/UWU-Lib"]
+	path = lib/UWU-Lib
+	url = https://github.com/SirBramble/UWU-Lib.git
