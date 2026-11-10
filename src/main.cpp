@@ -25,13 +25,13 @@ uwu::led_wall lwall(4);
 uwu::macruwu macruwu3("macruwu", &expander1, &rgb, &lwall);
 #endif
 
-void update_keymaps(FatVolume &volume)
+bool update_keymaps(FatVolume &volume)
 {
 #if TYPEUWU_VERSION == 2
-  typeuwu2.update_keymap_from_file(volume);
+  return typeuwu2.update_keymap_from_file(volume);
 #endif
 #if MACRUWU_VERSION == 3
-  macruwu3.update_keymap_from_file(volume);
+  return macruwu3.update_keymap_from_file(volume);
 #endif
 }
 
@@ -68,18 +68,17 @@ void setup() {
 #if TYPEUWU_VERSION == 2
   int typeuwu_init = typeuwu2.init();
   Serial.printf("typeuwu init: %d",typeuwu_init);
-  lwall.set_flash_volume(filesystem_get_flash_volume());
 #endif
 #if MACRUWU_VERSION == 3
   int macruwu_init = macruwu3.init();
   Serial.printf("typeuwu init: %d",macruwu_init);
   expander1.use_manual();
-  lwall.set_flash_volume(filesystem_get_flash_volume());
 #endif
 
   uwu::init_sender(&telem);
 
-  filesystem_set_config_file_read_calback([&](FatVolume &volume) {update_keymaps(volume);}); // Call before setup for initial callback
+  lwall.set_flash_read_session(filesystem_begin_read, filesystem_end_read);
+  filesystem_set_config_file_read_callback(update_keymaps);
   filesystem_setup();
 
   TinyUSBDevice.detach();
